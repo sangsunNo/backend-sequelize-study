@@ -1,0 +1,19 @@
+{
+    "development": {
+        "host": "localhost",
+        "database": "nn_test",
+        "username": "user",
+        "password": "qwer1234",
+        "dialect": "mysql",
+        "port": 3306
+    },
+
+    "product": {
+        "host": "서버 ip",
+        "database": "",
+        "username": "",
+        "password": "",
+        "dialect": "mysql",
+        "port": 3306
+    }
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USER</title>
+</head>
+<style>
+    li{
+        display: flex;
+    }
+</style>
+<!-- axios -->
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+        crossorigin="anonymous">
+</script>
+<!-- sweetalert2 -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<body>
+    <div id="user_info">
+        <ul style="list-style: none;">
+        <li><div class="name"></div>&nbsp;님 안녕하세요.</li><br>
+        <li>ID : <div class="id">&nbsp; </div></li>
+        <li>PW : <div class="pw">&nbsp; </div></li>
+        <li>NAME : <div class="name">&nbsp; </div></li>
+    </ul>
+    <button type="button" onclick="user_info_mod()">계정 수정</button>
+    <button type="button" onclick="user_del()">계정 삭제</button>
+</body>
+
+
+<script>
+    // GET으로 받아 온 id 를 통해 user 정보 가져와 출력
+    var user_id = document.location.href.split('?')[1].split('=');
+    var data = {};
+    data[user_id[0]] = user_id[1]
+    axios({
+        url: 'get_user_info',
+        method: 'post',
+        data: data
+    }).then((response) => {
+        console.log(response.data[0])
+        var user_div = document.getElementById("user_info");
+
+        $(".id").text(response.data[0].id);
+        $(".pw").text(response.data[0].pw);
+        $(".name").text(response.data[0].name);
+    })
+
+
+    // 계정 정보 수정
+    function user_info_mod() {
+        var { value: formValues } = Swal.fire({
+            html:
+            'ID' + '<input id="swal-input1" class="swal2-input" type="text" placeholder="ID" ><br>' +
+            'PW' + '<input id="swal-input2" class="swal2-input" type="text" placeholder="PW"><br>' +
+            'NAME' + '<input id="swal-input3" class="swal2-input" type="text" placeholder="NAME">',
+            showCancelButton: true,
+            confirmButtonText: '수정',
+            cancelButtonText: '취소',
+            returnInputValueOnDeny: true,
+            focusConfirm: true,
+            preConfirm: () => {
+                var id = $('#swal-input1').val();
+                var pw = $('#swal-input2').val();
+                var name = $('#swal-input3').val();
+                
+                if(id == '' && pw == '' && name == ''){
+                    Swal.showValidationMessage(
+                        "변경 사항이 없습니다."
+                )}
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var id = $('#swal-input1').val();
+                var pw = $('#swal-input2').val();
+                var name = $('#swal-input3').val();
+                var data = {
+                    u_id: user_id[1],
+                    id: id,
+                    pw: pw,
+                    name: name
+                };
+
+                axios({
+                    url: "user_mod",
+                    method: "post",
+                    data: data
+                }).then((response) => {
+                    console.log('modify_result',response.data.result);
+                    if (response.data.result == 0){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: '이미 있는 ID 입니다!',
+                            })
+                    }else{
+                        var url_root = document.location.href.split('=')[0];
+                        document.location.href = url_root + '=' + response.data.id;
+                    }
+                })
+            }
+        })
+    }
+
+
+    // 유저 삭제
+    function user_del() {
+            axios({
+                url: "/user_del",
+                method: "post",
+                data: {id: user_id[1]}
+            }).then((response) => {
+                console.log('delete_result',response);
+
+                if (response.data.result == 1){
+                    document.location.href = '/';
+                }
+            })
+        }
+</script>
+</html>

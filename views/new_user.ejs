@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+
+        <!-- axios -->
+        <script src = "https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+        <!-- jquery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+                crossorigin="anonymous">
+        </script>
+        <!-- sweetalert2 -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+</head>
+<body>
+    <form id="form_register">
+        <fieldset style="display: inline-block;">
+            <legend>회원가입</legend>
+            ID : <input type="text" name="id" placeholder="ID 입력"><br>
+            PASSWORD : <input type="text" name="pw" placeholder="PASSWORD 입력"><br>
+            이름 : <input type="text" name="name" placeholder="이름 입력"><br>
+            <button type="button" onclick="register();">회원가입</button>
+        </fieldset>
+    </form>
+
+    <script>
+        function register(){
+            var form = document.getElementById("form_register");
+            var data = {
+                id: form.id.value,
+                pw: form.pw.value,
+                name: form.name.value
+            }
+
+            axios({
+                url: "/register_user",
+                method: "post",
+                data: data
+            }).then((response) => {
+                if (response.data.result == 1){
+                    swal.fire(
+                            'Error!',
+                            ' <b style="color:red;">이미 존재하는 ID 입니다!</b>',
+                            'error'
+                        )
+                }else{
+                    window.location = '/';
+                }
+            })
+        }
+    </script>
+</body>
+</html>
+
+
+<!--
+    result : 1 = 이미 존재하는 id 
+-->
